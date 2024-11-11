@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 typedef struct
@@ -414,4 +415,4 @@ private:
         analogWrite(XAxis, CurrentPoint.X);
         analogWrite(YAxis, CurrentPoint.Y);
     }
-};
+};*/

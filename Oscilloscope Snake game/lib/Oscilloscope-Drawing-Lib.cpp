@@ -1,3 +1,4 @@
+/*
 #include <avr/pgmspace.h> 
 #include "DrawLib.h"
 
@@ -77,3 +78,4 @@ void CheckTimer()
         FPSCounter = 0;
     }
 }
+*/
