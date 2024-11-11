@@ -19,6 +19,7 @@ void setup() {
 void loop() {
   // Example: Draw a circle
   drawCircle(2048, 2048, 2048);  // Center X=2048, Y=2048, Radius=2048
+  drawLine(2048, 2048);
 }
 
 // Function to send data to the MCP4822 DAC
@@ -38,4 +39,15 @@ void drawCircle(int centerX, int centerY, int radius) {
     writeDAC(MCP4822_CHANNEL_B, y);
     delay(1);  // Adjust for speed; lower delay for smoother shapes
   }
+}
+
+void drawLine(int start, int end)
+{
+  for(int i = start; i < 2048; i++)
+  {
+    writeDAC(MCP4822_CHANNEL_A, i);
+    delay(0.25);
+  }
+
+
 }
