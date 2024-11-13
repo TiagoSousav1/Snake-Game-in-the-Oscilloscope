@@ -24,7 +24,7 @@ void drawCircle(int centerX, int centerY, int radius) {
     int y = centerY + radius * sin(radians);
     writeDAC(MCP4822_CHANNEL_A, x);
     writeDAC(MCP4822_CHANNEL_B, y);
-    delay(500);  // Adjust for speed; lower delay for smoother shapes
+    //delay(1);  // Adjust for speed; lower delay for smoother shapes
   }
 }
 
@@ -33,7 +33,7 @@ void drawLine(int start, int end)
   for(int i = start; i < end; i++)
   {
     writeDAC(MCP4822_CHANNEL_A, i);
-    delay(1);
+    //delay(1);
   }
 }
 
@@ -50,7 +50,7 @@ void setup() {
 void loop() {
   // Example: Draw a circle
   //drawCircle(2048, 2048, 2048);  // Center X=2048, Y=2048, Radius=2048
-  //drawLine(1024, 4096);
+  drawLine(0, 4096);
 
 }
 
