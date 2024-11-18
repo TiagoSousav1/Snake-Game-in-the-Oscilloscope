@@ -23,7 +23,7 @@ SPISettings spiSets (20000000, MSBFIRST, SPI_MODE0);
 #define UP 2
 #define DOWN 3
 
-static int directionState = UP;
+//static int directionState = UP;
 
 
 
@@ -125,7 +125,7 @@ void setup() {
   // SPI settings
   SPI.begin();
   //SPI.setClockDivider(SPI_CLOCK_DIV2); // Set SPI speed
-  
+
   pinMode(CS_PIN, OUTPUT);
   digitalWrite(CS_PIN, HIGH);  // Ensure CS pin is high
 
