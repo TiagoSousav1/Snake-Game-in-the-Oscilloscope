@@ -42,11 +42,9 @@ void drawVerticalLine(int x, int y_start, int y_end)
   writeDAC(MCP4822_CHANNEL_2, x);
   for(int i = y_start; i < y_end; i++)
   {
-
     writeDAC(MCP4822_CHANNEL_1, i);
     //delay(0.1);
   }
-
 }
 
 void drawHorizontalLine(int y, int x_start, int x_end)
@@ -54,12 +52,11 @@ void drawHorizontalLine(int y, int x_start, int x_end)
   writeDAC(MCP4822_CHANNEL_1, y);
   for(int i = x_start; i < x_end; i++)
   {
-    
     writeDAC(MCP4822_CHANNEL_2, i);
     //delay(0.1);
   }
-
 }
+
 
 // Function to draw a square
 void drawSquare() {
@@ -89,8 +86,8 @@ void drawSquare() {
   //delay(10);
 
   // Move from (x2, y2) to (x3, y3)
-  writeDAC(MCP4822_CHANNEL_1, x2);
-  writeDAC(MCP4822_CHANNEL_2, y2);
+  //writeDAC(MCP4822_CHANNEL_1, x2);
+  //writeDAC(MCP4822_CHANNEL_2, y2);
   //delay(10);
   
   writeDAC(MCP4822_CHANNEL_1, x3);
@@ -98,8 +95,8 @@ void drawSquare() {
   //delay(10);
 
   // Move from (x3, y3) to (x4, y4)
-  writeDAC(MCP4822_CHANNEL_1, x3);
-  writeDAC(MCP4822_CHANNEL_2, y3);
+  //writeDAC(MCP4822_CHANNEL_1, x3);
+  //writeDAC(MCP4822_CHANNEL_2, y3);
   //delay(10);
   
   writeDAC(MCP4822_CHANNEL_1, x4);
@@ -107,8 +104,8 @@ void drawSquare() {
   //delay(10);
 
   // Move from (x4, y4) back to (x1, y1)
-  writeDAC(MCP4822_CHANNEL_1, x4);
-  writeDAC(MCP4822_CHANNEL_2, y4);
+  //writeDAC(MCP4822_CHANNEL_1, x4);
+  //writeDAC(MCP4822_CHANNEL_2, y4);
   //delay(10);
   
   writeDAC(MCP4822_CHANNEL_1, x1);
@@ -176,5 +173,6 @@ void loop() {
   //drawLine(1024, 4096);
 
   drawSquare();
+  drawHorizontalLine(2048, 1900, 2048);
 }
 
