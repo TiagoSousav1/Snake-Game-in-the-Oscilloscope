@@ -11,10 +11,10 @@ const int sideLength = 2048; // Side length of the square
 // MCP4822 DAC control bits
 #define MCP4822_CHANNEL_1 0x3000
 #define MCP4822_CHANNEL_2 0xB000
-#define RIGHT_BUTTON_PIN 8
-#define LEFT_BUTTON_PIN 9
-#define UP_BUTTON_PIN 10
-#define DOWN_BUTTON_PIN 11
+#define RIGHT_BUTTON_PIN 7
+#define LEFT_BUTTON_PIN 6
+#define UP_BUTTON_PIN 5
+#define DOWN_BUTTON_PIN 4
 
 #define RIGHT 0
 #define LEFT 1
@@ -126,25 +126,25 @@ void drawSquare() {
 void updateDirectionStateRight()
 {
   directionState = RIGHT;
-  Serial.print("RIGHT");
+  Serial.print(directionState);
 }
 
 void updateDirectionStateLeft()
 {
   directionState = LEFT;
-  Serial.print("LEFT");
+  Serial.print(directionState);
 }
 
 void updateDirectionStateUp()
 {
   directionState = UP;
-  Serial.print("UP");
+  Serial.print(directionState);
 }
 
 void updateDirectionStateDown()
 {
   directionState = DOWN;
-  Serial.print("DOWN");
+  Serial.print(directionState);
 }
 
 void setup() {
