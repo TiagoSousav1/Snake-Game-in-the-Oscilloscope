@@ -14,22 +14,21 @@ SPISettings spiSets (20000000, MSBFIRST, SPI_MODE0);
 #define MCP4822_CHANNEL_1 0x3000
 #define MCP4822_CHANNEL_2 0xB000
 #define RIGHT_BUTTON_PIN 8
-#define LEFT_BUTTON_PIN 8
-#define UP_BUTTON_PIN 8
-#define DOWN_BUTTON_PIN 8
+#define LEFT_BUTTON_PIN 9
+#define UP_BUTTON_PIN 10
+#define DOWN_BUTTON_PIN 11
 
 #define RIGHT 0
 #define LEFT 1
 #define UP 2
 #define DOWN 3
 
-//static int directionState = UP;
+static int directionState = UP
 
 
 
 // Function to send data to the MCP4822 DAC
 void writeDAC(uint16_t channel, uint16_t value) {
-  SPI.beginTransaction(spiSets);
   digitalWrite(CS_PIN, LOW);
   SPI.transfer16(channel | (value & 0x0FFF));  // Send channel + value
   digitalWrite(CS_PIN, HIGH);
@@ -116,7 +115,7 @@ void drawSquare() {
   //delay(10);
 }
 
-//void updateDirectionState()
+void updateDirectionState()
 
 void setup() {
   // DEBUGGING
@@ -132,16 +131,16 @@ void setup() {
 
   /* // BUTTONS
   pinMode(RIGHT_BUTTON_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(RIGHT_BUTTON_PIN), updateDirectionState, FALLING);
+  attachInterrupt(digitalPinToInterrupt(RIGHT_BUTTON_PIN), updateDirectionStateRight, FALLING);
 
   pinMode(LEFT_BUTTON_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(LEFT_BUTTON_PIN), updateDirectionState, FALLING);
+  attachInterrupt(digitalPinToInterrupt(LEFT_BUTTON_PIN), updateDirectionStateLeft, FALLING);
 
   pinMode(UP_BUTTON_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(UP_BUTTON_PIN), updateDirectionState, FALLING);
+  attachInterrupt(digitalPinToInterrupt(UP_BUTTON_PIN), updateDirectionStateUp, FALLING);
 
   pinMode(DOWN_BUTTON_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(DOWN_BUTTON_PIN), updateDirectionState, FALLING); */
+  attachInterrupt(digitalPinToInterrupt(DOWN_BUTTON_PIN), updateDirectionState, FALLING);
 }
 
 void loop() {
