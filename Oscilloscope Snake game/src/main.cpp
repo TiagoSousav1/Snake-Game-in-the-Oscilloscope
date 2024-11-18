@@ -6,7 +6,9 @@ const int CS_PIN = 10;    // Chip select pin for MCP4822
 
 const int centerX = 2048;    // Center X position (mid-range of DAC)
 const int centerY = 2048;    // Center Y position (mid-range of DAC)
-const int sideLength = 2048; // Side length of the square
+const int sideLength = 4095; // Side length of the square
+
+SPISettings spiSets (20000000, MSBFIRST, SPI_MODE0);
 
 // MCP4822 DAC control bits
 #define MCP4822_CHANNEL_1 0x3000
@@ -21,29 +23,19 @@ const int sideLength = 2048; // Side length of the square
 #define UP 2
 #define DOWN 3
 
-static int directionState = UP
+static int directionState = UP;
 
 
 
 // Function to send data to the MCP4822 DAC
 void writeDAC(uint16_t channel, uint16_t value) {
+  SPI.beginTransaction(spiSets);
   digitalWrite(CS_PIN, LOW);
   SPI.transfer16(channel | (value & 0x0FFF));  // Send channel + value
   digitalWrite(CS_PIN, HIGH);
+  SPI.endTransaction();
 }
 
-
-// Function to draw a circle by calculating X and Y points
-void drawCircle(int centerX, int centerY, int radius) {
-  for (int angle = 0; angle < 360; angle += 5) {
-    float radians = angle * 3.14159 / 180.0;
-    int x = centerX + radius * cos(radians);
-    int y = centerY + radius * sin(radians);
-    writeDAC(MCP4822_CHANNEL_1, x);
-    writeDAC(MCP4822_CHANNEL_2, y);
-    delay(10);  // Adjust for speed; lower delay for smoother shapes
-  }
-}
 
 void drawVerticalLine(int x, int y_start, int y_end)
 {
@@ -90,55 +82,55 @@ void drawSquare() {
   // Move from (x1, y1) to (x2, y2)
   writeDAC(MCP4822_CHANNEL_1, x1);
   writeDAC(MCP4822_CHANNEL_2, y1);
-  delay(10);
+  //delay(10);
   
   writeDAC(MCP4822_CHANNEL_1, x2);
   writeDAC(MCP4822_CHANNEL_2, y2);
-  delay(10);
+  //delay(10);
 
   // Move from (x2, y2) to (x3, y3)
   writeDAC(MCP4822_CHANNEL_1, x2);
   writeDAC(MCP4822_CHANNEL_2, y2);
-  delay(10);
+  //delay(10);
   
   writeDAC(MCP4822_CHANNEL_1, x3);
   writeDAC(MCP4822_CHANNEL_2, y3);
-  delay(10);
+  //delay(10);
 
   // Move from (x3, y3) to (x4, y4)
   writeDAC(MCP4822_CHANNEL_1, x3);
   writeDAC(MCP4822_CHANNEL_2, y3);
-  delay(10);
+  //delay(10);
   
   writeDAC(MCP4822_CHANNEL_1, x4);
   writeDAC(MCP4822_CHANNEL_2, y4);
-  delay(10);
+  //delay(10);
 
   // Move from (x4, y4) back to (x1, y1)
   writeDAC(MCP4822_CHANNEL_1, x4);
   writeDAC(MCP4822_CHANNEL_2, y4);
-  delay(10);
+  //delay(10);
   
   writeDAC(MCP4822_CHANNEL_1, x1);
   writeDAC(MCP4822_CHANNEL_2, y1);
-  delay(10);
+  //delay(10);
 }
 
-void updateDirectionState()
+//void updateDirectionState()
 
 void setup() {
   // DEBUGGING
   Serial.begin(9600);
 
-
   // SPI settings
   SPI.begin();
-  SPI.setClockDivider(SPI_CLOCK_DIV2); // Set SPI speed
+  //SPI.setClockDivider(SPI_CLOCK_DIV2); // Set SPI speed
+  
   pinMode(CS_PIN, OUTPUT);
   digitalWrite(CS_PIN, HIGH);  // Ensure CS pin is high
 
 
-  // BUTTONS
+  /* // BUTTONS
   pinMode(RIGHT_BUTTON_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(RIGHT_BUTTON_PIN), updateDirectionState, FALLING);
 
@@ -149,18 +141,19 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(UP_BUTTON_PIN), updateDirectionState, FALLING);
 
   pinMode(DOWN_BUTTON_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(DOWN_BUTTON_PIN), updateDirectionState, FALLING);
+  attachInterrupt(digitalPinToInterrupt(DOWN_BUTTON_PIN), updateDirectionState, FALLING); */
 }
 
 void loop() {
-  // Example: Draw a circle
-  //drawCircle(2048, 2048, 2048);  // Center X=2048, Y=2048, Radius=2048
-  drawVerticalLine(0, 0, 2048); // Left side
-  drawHorizontalLine(2048, 0, 4096); // Top side
-  drawVerticalLine(4096, 0, 2048);  // Right side
-  drawHorizontalLine(0, 0, 4096); // Bot side
+  // ponto a ponto - bastante ruído
+  /* drawVerticalLine(0, 0, 2048); // Left side
+  drawHorizontalLine(2048, 0, 4095); // Top side
+  drawVerticalLine(4095, 0, 2048);  // Right side
+  drawHorizontalLine(0, 0, 4095); // Bot side */
+
   //drawLine(1024, 4096);
-  //drawSquare();
+
+  drawSquare();
 }
 
 
