@@ -9,8 +9,21 @@ const int centerY = 2048;    // Center Y position (mid-range of DAC)
 const int sideLength = 2048; // Side length of the square
 
 // MCP4822 DAC control bits
-#define MCP4822_CHANNEL_A 0x3000
-#define MCP4822_CHANNEL_B 0xB000
+#define MCP4822_CHANNEL_1 0x3000
+#define MCP4822_CHANNEL_2 0xB000
+#define RIGHT_BUTTON_PIN 8
+#define LEFT_BUTTON_PIN 8
+#define UP_BUTTON_PIN 8
+#define DOWN_BUTTON_PIN 8
+
+#define RIGHT 0
+#define LEFT 1
+#define UP 2
+#define DOWN 3
+
+static int directionState = UP
+
+
 
 // Function to send data to the MCP4822 DAC
 void writeDAC(uint16_t channel, uint16_t value) {
@@ -26,19 +39,19 @@ void drawCircle(int centerX, int centerY, int radius) {
     float radians = angle * 3.14159 / 180.0;
     int x = centerX + radius * cos(radians);
     int y = centerY + radius * sin(radians);
-    writeDAC(MCP4822_CHANNEL_A, x);
-    writeDAC(MCP4822_CHANNEL_B, y);
+    writeDAC(MCP4822_CHANNEL_1, x);
+    writeDAC(MCP4822_CHANNEL_2, y);
     delay(10);  // Adjust for speed; lower delay for smoother shapes
   }
 }
 
 void drawVerticalLine(int x, int y_start, int y_end)
 {
-  writeDAC(MCP4822_CHANNEL_B, x);
+  writeDAC(MCP4822_CHANNEL_2, x);
   for(int i = y_start; i < y_end; i++)
   {
 
-    writeDAC(MCP4822_CHANNEL_A, i);
+    writeDAC(MCP4822_CHANNEL_1, i);
     //delay(0.1);
   }
 
@@ -46,11 +59,11 @@ void drawVerticalLine(int x, int y_start, int y_end)
 
 void drawHorizontalLine(int y, int x_start, int x_end)
 {
-  writeDAC(MCP4822_CHANNEL_A, y);
+  writeDAC(MCP4822_CHANNEL_1, y);
   for(int i = x_start; i < x_end; i++)
   {
     
-    writeDAC(MCP4822_CHANNEL_B, i);
+    writeDAC(MCP4822_CHANNEL_2, i);
     //delay(0.1);
   }
 
@@ -75,48 +88,68 @@ void drawSquare() {
   // Start at (x1, y1) -> (x2, y2) -> (x3, y3) -> (x4, y4) -> back to (x1, y1)
   
   // Move from (x1, y1) to (x2, y2)
-  writeDAC(MCP4822_CHANNEL_A, x1);
-  writeDAC(MCP4822_CHANNEL_B, y1);
+  writeDAC(MCP4822_CHANNEL_1, x1);
+  writeDAC(MCP4822_CHANNEL_2, y1);
   delay(10);
   
-  writeDAC(MCP4822_CHANNEL_A, x2);
-  writeDAC(MCP4822_CHANNEL_B, y2);
+  writeDAC(MCP4822_CHANNEL_1, x2);
+  writeDAC(MCP4822_CHANNEL_2, y2);
   delay(10);
 
   // Move from (x2, y2) to (x3, y3)
-  writeDAC(MCP4822_CHANNEL_A, x2);
-  writeDAC(MCP4822_CHANNEL_B, y2);
+  writeDAC(MCP4822_CHANNEL_1, x2);
+  writeDAC(MCP4822_CHANNEL_2, y2);
   delay(10);
   
-  writeDAC(MCP4822_CHANNEL_A, x3);
-  writeDAC(MCP4822_CHANNEL_B, y3);
+  writeDAC(MCP4822_CHANNEL_1, x3);
+  writeDAC(MCP4822_CHANNEL_2, y3);
   delay(10);
 
   // Move from (x3, y3) to (x4, y4)
-  writeDAC(MCP4822_CHANNEL_A, x3);
-  writeDAC(MCP4822_CHANNEL_B, y3);
+  writeDAC(MCP4822_CHANNEL_1, x3);
+  writeDAC(MCP4822_CHANNEL_2, y3);
   delay(10);
   
-  writeDAC(MCP4822_CHANNEL_A, x4);
-  writeDAC(MCP4822_CHANNEL_B, y4);
+  writeDAC(MCP4822_CHANNEL_1, x4);
+  writeDAC(MCP4822_CHANNEL_2, y4);
   delay(10);
 
   // Move from (x4, y4) back to (x1, y1)
-  writeDAC(MCP4822_CHANNEL_A, x4);
-  writeDAC(MCP4822_CHANNEL_B, y4);
+  writeDAC(MCP4822_CHANNEL_1, x4);
+  writeDAC(MCP4822_CHANNEL_2, y4);
   delay(10);
   
-  writeDAC(MCP4822_CHANNEL_A, x1);
-  writeDAC(MCP4822_CHANNEL_B, y1);
+  writeDAC(MCP4822_CHANNEL_1, x1);
+  writeDAC(MCP4822_CHANNEL_2, y1);
   delay(10);
 }
 
+void updateDirectionState()
+
 void setup() {
+  // DEBUGGING
+  Serial.begin(9600);
+
+
   // SPI settings
   SPI.begin();
   SPI.setClockDivider(SPI_CLOCK_DIV2); // Set SPI speed
   pinMode(CS_PIN, OUTPUT);
   digitalWrite(CS_PIN, HIGH);  // Ensure CS pin is high
+
+
+  // BUTTONS
+  pinMode(RIGHT_BUTTON_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(RIGHT_BUTTON_PIN), updateDirectionState, FALLING);
+
+  pinMode(LEFT_BUTTON_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(LEFT_BUTTON_PIN), updateDirectionState, FALLING);
+
+  pinMode(UP_BUTTON_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(UP_BUTTON_PIN), updateDirectionState, FALLING);
+
+  pinMode(DOWN_BUTTON_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(DOWN_BUTTON_PIN), updateDirectionState, FALLING);
 }
 
 void loop() {
