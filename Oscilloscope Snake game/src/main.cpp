@@ -152,7 +152,7 @@ void setup() {
   digitalWrite(CS_PIN, HIGH);  // Ensure CS pin is high
 
 
-  /* // BUTTONS
+  // BUTTONS
   pinMode(RIGHT_BUTTON_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(RIGHT_BUTTON_PIN), updateDirectionStateRight, FALLING);
 
@@ -163,15 +163,15 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(UP_BUTTON_PIN), updateDirectionStateUp, FALLING);
 
   pinMode(DOWN_BUTTON_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(DOWN_BUTTON_PIN), updateDirectionState, FALLING);
+  attachInterrupt(digitalPinToInterrupt(DOWN_BUTTON_PIN), updateDirectionStateDown, FALLING);
 }
 
 void loop() {
   // ponto a ponto - bastante ruído
-  /* drawVerticalLine(0, 0, 2048); // Left side
-  drawHorizontalLine(2048, 0, 4095); // Top side
-  drawVerticalLine(4095, 0, 2048);  // Right side
-  drawHorizontalLine(0, 0, 4095); // Bot side */
+  //drawVerticalLine(0, 0, 2048); // Left side
+  //drawHorizontalLine(2048, 0, 4095); // Top side
+  //drawVerticalLine(4095, 0, 2048);  // Right side
+  //drawHorizontalLine(0, 0, 4095); // Bot side
 
   //drawLine(1024, 4096);
 
