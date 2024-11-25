@@ -8,6 +8,9 @@ const int centerX = 2048;    // Center X position (mid-range of DAC)
 const int centerY = 2048;    // Center Y position (mid-range of DAC)
 const int sideLength = 4095; // Side length of the square
 
+uint16_t lastX = 0;
+uint16_t lastY = 0;
+
 SPISettings spiSets (20000000, MSBFIRST, SPI_MODE0);
 
 // MCP4822 DAC control bits
@@ -36,6 +39,24 @@ void writeDAC(uint16_t channel, uint16_t value) {
   SPI.endTransaction();
 }
 
+void moveTo(uint16_t x, uint16_t y)
+{
+  const int steps = 50;
+
+  for(int i=1; i<=steps; i++)
+  {
+    uint16_t x_intermediate = lastX + (x - lastX) * i/steps;
+    uint16_t y_intermediate = lastY + (y - lastY) * i/steps;
+
+    writeDAC(MCP4822_CHANNEL_1, x_intermediate);
+    writeDAC(MCP4822_CHANNEL_2, y_intermediate);
+
+    //delay(1);
+  }
+
+  lastX = x;
+  lastY = y;
+}
 
 void drawVerticalLine(int x, int y_start, int y_end)
 {
@@ -43,7 +64,7 @@ void drawVerticalLine(int x, int y_start, int y_end)
   for(int i = y_start; i < y_end; i++)
   {
     writeDAC(MCP4822_CHANNEL_1, i);
-    //delay(0.1);
+    delay(0.1);
   }
 }
 
@@ -53,8 +74,19 @@ void drawHorizontalLine(int y, int x_start, int x_end)
   for(int i = x_start; i < x_end; i++)
   {
     writeDAC(MCP4822_CHANNEL_2, i);
-    //delay(0.1);
+    delay(0.1);
   }
+}
+
+void drawSnake(int y, int xstart, int xend)
+{
+  moveTo(xstart, y);
+
+  writeDAC(MCP4822_CHANNEL_1, xstart);
+  writeDAC(MCP4822_CHANNEL_2, y);
+
+  writeDAC(MCP4822_CHANNEL_1, xend);
+  writeDAC(MCP4822_CHANNEL_2, y);
 }
 
 
@@ -79,11 +111,11 @@ void drawSquare() {
   // Move from (x1, y1) to (x2, y2)
   writeDAC(MCP4822_CHANNEL_1, x1);
   writeDAC(MCP4822_CHANNEL_2, y1);
-  //delay(10);
+  delay(10);
   
   writeDAC(MCP4822_CHANNEL_1, x2);
   writeDAC(MCP4822_CHANNEL_2, y2);
-  //delay(10);
+  delay(10);
 
   // Move from (x2, y2) to (x3, y3)
   //writeDAC(MCP4822_CHANNEL_1, x2);
@@ -92,7 +124,7 @@ void drawSquare() {
   
   writeDAC(MCP4822_CHANNEL_1, x3);
   writeDAC(MCP4822_CHANNEL_2, y3);
-  //delay(10);
+  delay(10);
 
   // Move from (x3, y3) to (x4, y4)
   //writeDAC(MCP4822_CHANNEL_1, x3);
@@ -101,7 +133,7 @@ void drawSquare() {
   
   writeDAC(MCP4822_CHANNEL_1, x4);
   writeDAC(MCP4822_CHANNEL_2, y4);
-  //delay(10);
+  delay(10);
 
   // Move from (x4, y4) back to (x1, y1)
   //writeDAC(MCP4822_CHANNEL_1, x4);
@@ -110,7 +142,10 @@ void drawSquare() {
   
   writeDAC(MCP4822_CHANNEL_1, x1);
   writeDAC(MCP4822_CHANNEL_2, y1);
-  //delay(10);
+  delay(10);
+
+  lastX = x1;
+  lastY = y1;
 }
 
 void updateDirectionStateRight()
@@ -165,14 +200,14 @@ void setup() {
 
 void loop() {
   // ponto a ponto - bastante ruído
-  //drawVerticalLine(0, 0, 2048); // Left side
-  //drawHorizontalLine(2048, 0, 4095); // Top side
-  //drawVerticalLine(4095, 0, 2048);  // Right side
-  //drawHorizontalLine(0, 0, 4095); // Bot side
+  drawVerticalLine(0, 0, 256); // Left side
+  drawHorizontalLine(256, 0, 256); // Top side
+  drawVerticalLine(256, 0, 256);  // Right side
+  drawHorizontalLine(0, 0, 256); // Bot side
 
-  //drawLine(1024, 4096);
-
-  drawSquare();
-  drawHorizontalLine(2048, 1900, 2048);
+  //drawSquare();
+  drawVerticalLine(128, 80, 200);
+  //drawHorizontalLine(2048, 1900, 2048);
+  //drawSnake(2048, 1900, 2048);
 }
 
