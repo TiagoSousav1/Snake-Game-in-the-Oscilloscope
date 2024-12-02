@@ -4,12 +4,13 @@
 // MCP4822 configuration
 const int CS_PIN = 10;    // Chip select pin for MCP4822
 
-const int centerX = 2048;    // Center X position (mid-range of DAC)
-const int centerY = 2048;    // Center Y position (mid-range of DAC)
-const int sideLength = 4095; // Side length of the square
+const int sideLength = 256;  // Side length of the square
+const int centerX = sideLength / 2;    // Center X position (mid-range of DAC)
+const int centerY = sideLength / 2;    // Center Y position (mid-range of DAC)
 
-uint16_t lastX = 0;
-uint16_t lastY = 0;
+const int stepSize = 16;
+
+uint16_t snake[256][256];
 
 SPISettings spiSets (20000000, MSBFIRST, SPI_MODE0);
 
@@ -26,7 +27,7 @@ SPISettings spiSets (20000000, MSBFIRST, SPI_MODE0);
 #define UP 2
 #define DOWN 3
 
-static int directionState = UP;
+int directionState = UP;
 
 
 
@@ -39,23 +40,18 @@ void writeDAC(uint16_t channel, uint16_t value) {
   SPI.endTransaction();
 }
 
-void moveTo(uint16_t x, uint16_t y)
+void drawPoint(int x, int y)
 {
-  const int steps = 50;
+  writeDAC(MCP4822_CHANNEL_1, x);
+  writeDAC(MCP4822_CHANNEL_2, y);
+}
 
-  for(int i=1; i<=steps; i++)
+void drawSnake(uint16_t **snake, int snakeLength)
+{
+  for (int i = 0; i < snakeLength; i++)
   {
-    uint16_t x_intermediate = lastX + (x - lastX) * i/steps;
-    uint16_t y_intermediate = lastY + (y - lastY) * i/steps;
-
-    writeDAC(MCP4822_CHANNEL_1, x_intermediate);
-    writeDAC(MCP4822_CHANNEL_2, y_intermediate);
-
-    //delay(1);
+    drawPoint(snake[i][0], snake[i][1]);
   }
-
-  lastX = x;
-  lastY = y;
 }
 
 void drawVerticalLine(int x, int y_start, int y_end)
@@ -78,99 +74,99 @@ void drawHorizontalLine(int y, int x_start, int x_end)
   }
 }
 
-void drawSnake(int y, int xstart, int xend)
-{
-  moveTo(xstart, y);
-
-  writeDAC(MCP4822_CHANNEL_1, xstart);
-  writeDAC(MCP4822_CHANNEL_2, y);
-
-  writeDAC(MCP4822_CHANNEL_1, xend);
-  writeDAC(MCP4822_CHANNEL_2, y);
-}
-
-
-// Function to draw a square
+// Function to draw the boundary square
 void drawSquare() {
-  // Define square corners
-  int x1 = centerX - sideLength / 2;
-  int y1 = centerY - sideLength / 2;
-  
-  int x2 = centerX + sideLength / 2;
-  int y2 = y1;
-  
-  int x3 = x2;
-  int y3 = centerY + sideLength / 2;
-  
-  int x4 = x1;
-  int y4 = y3;
-
-  // Draw the square by moving between corners
-  // Start at (x1, y1) -> (x2, y2) -> (x3, y3) -> (x4, y4) -> back to (x1, y1)
-  
-  // Move from (x1, y1) to (x2, y2)
-  writeDAC(MCP4822_CHANNEL_1, x1);
-  writeDAC(MCP4822_CHANNEL_2, y1);
-  delay(10);
-  
-  writeDAC(MCP4822_CHANNEL_1, x2);
-  writeDAC(MCP4822_CHANNEL_2, y2);
-  delay(10);
-
-  // Move from (x2, y2) to (x3, y3)
-  //writeDAC(MCP4822_CHANNEL_1, x2);
-  //writeDAC(MCP4822_CHANNEL_2, y2);
-  //delay(10);
-  
-  writeDAC(MCP4822_CHANNEL_1, x3);
-  writeDAC(MCP4822_CHANNEL_2, y3);
-  delay(10);
-
-  // Move from (x3, y3) to (x4, y4)
-  //writeDAC(MCP4822_CHANNEL_1, x3);
-  //writeDAC(MCP4822_CHANNEL_2, y3);
-  //delay(10);
-  
-  writeDAC(MCP4822_CHANNEL_1, x4);
-  writeDAC(MCP4822_CHANNEL_2, y4);
-  delay(10);
-
-  // Move from (x4, y4) back to (x1, y1)
-  //writeDAC(MCP4822_CHANNEL_1, x4);
-  //writeDAC(MCP4822_CHANNEL_2, y4);
-  //delay(10);
-  
-  writeDAC(MCP4822_CHANNEL_1, x1);
-  writeDAC(MCP4822_CHANNEL_2, y1);
-  delay(10);
-
-  lastX = x1;
-  lastY = y1;
+  drawVerticalLine(0, 0, 256); // Left side
+  drawHorizontalLine(256, 0, 256); // Top side
+  drawVerticalLine(256, 0, 256);  // Right side
+  drawHorizontalLine(0, 0, 256); // Bot side
 }
 
-void updateDirectionStateRight()
+/* void moveSnake ()
 {
-  directionState = RIGHT;
-  Serial.print(directionState);
-}
+  if (directionState == UP)
+  {
+    snakeEndY += stepSize;
+    snakeStartY += stepSize;
 
-void updateDirectionStateLeft()
-{
-  directionState = LEFT;
-  Serial.print(directionState);
-}
+    // Collison with square's top boundary
+    if (snakeEndY >= sideLength)
+    {
+      snakeEndY = 0;
+    }
 
-void updateDirectionStateUp()
-{
-  directionState = UP;
-  Serial.print(directionState);
-}
+    if (snakeStartY >= sideLength)
+    {
+      snakeStartY = 0;
+    }
 
-void updateDirectionStateDown()
-{
-  directionState = DOWN;
-  Serial.print(directionState);
-}
+    // Redraw snake in new position
+    drawVerticalLine(snakeStartX, snakeStartY, snakeEndY);
+  }
+
+  if (directionState == DOWN)
+  {
+    snakeEndY -= stepSize;
+    snakeStartY -= stepSize;
+
+    // Collison with square's bottom boundary
+    if (snakeEndY <= 0)
+    {
+      snakeEndY = sideLength;
+    }
+
+    if (snakeStartY <= 0)
+    {
+      snakeStartY = sideLength;
+    }
+
+    // Redraw snake in new position
+    drawVerticalLine(snakeStartX, snakeStartY, snakeEndY);
+  }
+
+  if (directionState == RIGHT)   // change snake coordinates - this if isn't finalized
+  {
+    snakeEndY -= stepSize;
+    snakeStartY -= stepSize;
+
+    // Collison with square's bottom boundary
+    if (snakeEndY <= 0)
+    {
+      snakeEndY = sideLength;
+    }
+
+    if (snakeStartY <= 0)
+    {
+      snakeStartY = sideLength;
+    }
+
+    // Redraw snake in new position
+    drawHorizontalLine(snakeStartX, snakeStartY, snakeEndY);
+  }
+
+  if (directionState == LEFT)   // change snake coordinates - this if isn't finalized
+  {
+    snakeEndY -= stepSize;
+    snakeStartY -= stepSize;
+
+    // Collison with square's bottom boundary
+    if (snakeEndY <= 0)
+    {
+      snakeEndY = sideLength;
+    }
+
+    if (snakeStartY <= 0)
+    {
+      snakeStartY = sideLength;
+    }
+
+    // Redraw snake in new position
+    drawHorizontalLine(snakeStartX, snakeStartY, snakeEndY);
+  }
+
+  delay(10);  // better visibility... for now, might delete later
+}  */
+
 
 void setup() {
   // DEBUGGING
@@ -195,19 +191,16 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(UP_BUTTON_PIN), updateDirectionStateUp, FALLING);
 
   pinMode(DOWN_BUTTON_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(DOWN_BUTTON_PIN), updateDirectionStateDown, FALLING);
+  attachInterrupt(digitalPinToInterrupt(DOWN_BUTTON_PIN), updateDirectionStateDown, FALLING); 
+
+  drawSnake();
 }
 
 void loop() {
-  // ponto a ponto - bastante ruído
-  drawVerticalLine(0, 0, 256); // Left side
-  drawHorizontalLine(256, 0, 256); // Top side
-  drawVerticalLine(256, 0, 256);  // Right side
-  drawHorizontalLine(0, 0, 256); // Bot side
-
-  //drawSquare();
-  drawVerticalLine(128, 80, 200);
+  drawSquare();
+  //drawVerticalLine(snakeStartX, snakeStartY, snakeEndY);
   //drawHorizontalLine(2048, 1900, 2048);
-  //drawSnake(2048, 1900, 2048);
+
+  //moveSnake();
 }
 
