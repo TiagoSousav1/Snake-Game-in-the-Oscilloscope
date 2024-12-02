@@ -137,6 +137,7 @@ void drawVerticalLine(int x, int y_start, int y_end)
   {
     writeDAC(MCP4822_CHANNEL_1, i);
     delay(0.1);
+    delay(0.1);
   }
 }
 
@@ -147,9 +148,11 @@ void drawHorizontalLine(int y, int x_start, int x_end)
   {
     writeDAC(MCP4822_CHANNEL_2, i);
     delay(0.1);
+    delay(0.1);
   }
 }
 
+// Function to draw the boundary square
 // Function to draw the boundary square
 void drawSquare() {
   drawVerticalLine(0, 0, BOARD_SIZE); // Left side
