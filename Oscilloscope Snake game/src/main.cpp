@@ -154,7 +154,7 @@ void nextSnake()
 void drawVerticalLine(int x, int y_start, int y_end)
 {
   writeDAC(MCP4822_CHANNEL_2, x);
-  for(int i = y_start; i < y_end; i++)
+  for(int i = y_start; i < y_end; i+=3)
   {
     writeDAC(MCP4822_CHANNEL_1, i);
   }
@@ -163,7 +163,7 @@ void drawVerticalLine(int x, int y_start, int y_end)
 void drawHorizontalLine(int y, int x_start, int x_end)
 {
   writeDAC(MCP4822_CHANNEL_1, y);
-  for(int i = x_start; i < x_end; i++)
+  for(int i = x_start; i < x_end; i+=3)
   {
     writeDAC(MCP4822_CHANNEL_2, i);
   }
@@ -208,13 +208,13 @@ void setup() {
 void loop() {
 
 
-  drawPoint(0, BOARD_SIZE);
-  delay(1000);
-  drawPoint(0, 0);
-  delay(1000);
-  //drawSquare();
-  //drawSnake();
-  //nextSnake();
+  //drawPoint(0, BOARD_SIZE);
+  //delay(1000);
+  //drawPoint(0, 0);
+  //delay(1000);
+  drawSquare();
+  drawSnake();
+  nextSnake();
   //Serial.println(directionState);
 
 
