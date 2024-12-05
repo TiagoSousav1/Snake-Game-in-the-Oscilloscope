@@ -21,7 +21,7 @@
 
 const int stepSize = 16;
 
-int snake[256][2];
+uint16_t snake[BOARD_SIZE][2];
 int snakeLength = 100;
 
 SPISettings spiSets (20000000, MSBFIRST, SPI_MODE0);
@@ -95,10 +95,10 @@ void drawSnake()
 void nextSnake()
 {
   // Shift all elements back by one
-  for (int i = 1; i < snakeLength; i++)
+  for (int i = snakeLength; i > 0; i--)
   {
-      snake[i - 1][0] = snake[i][0];
-      snake[i - 1][1] = snake[i][1];
+      snake[i][0] = snake[i - 1][0];
+      snake[i][1] = snake[i - 1][1];
   }
 
   if(directionState == UP)
@@ -106,7 +106,7 @@ void nextSnake()
     snake[0][0] = snake[1][0];
     snake[0][1] = snake[1][1]+1;
 
-    if (snake[0][1] > BOARD_SIZE)
+    if (snake[0][1] == BOARD_SIZE)
     {
       snake[0][1] = 0;
     }
@@ -157,8 +157,6 @@ void drawVerticalLine(int x, int y_start, int y_end)
   for(int i = y_start; i < y_end; i++)
   {
     writeDAC(MCP4822_CHANNEL_1, i);
-    delay(0.1);
-    delay(0.1);
   }
 }
 
@@ -168,8 +166,6 @@ void drawHorizontalLine(int y, int x_start, int x_end)
   for(int i = x_start; i < x_end; i++)
   {
     writeDAC(MCP4822_CHANNEL_2, i);
-    delay(0.1);
-    delay(0.1);
   }
 }
 
@@ -211,9 +207,14 @@ void setup() {
 
 void loop() {
 
-  drawSquare();
-  drawSnake();
-  nextSnake();
+
+  drawPoint(0, BOARD_SIZE);
+  delay(1000);
+  drawPoint(0, 0);
+  delay(1000);
+  //drawSquare();
+  //drawSnake();
+  //nextSnake();
   //Serial.println(directionState);
 
 
