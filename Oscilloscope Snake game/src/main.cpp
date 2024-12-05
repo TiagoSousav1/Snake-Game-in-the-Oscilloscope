@@ -22,7 +22,7 @@
 const int stepSize = 16;
 
 int snake[256][2];
-int snakeLength = 40;
+int snakeLength = 100;
 
 SPISettings spiSets (20000000, MSBFIRST, SPI_MODE0);
 
@@ -30,7 +30,7 @@ int directionState = UP;
 
 void inputInterrupt()
 {
-  Serial.println("I WAS INTERRUPTED");
+  //Serial.println("I WAS INTERRUPTED");
   if(digitalRead(RIGHT_BUTTON_PIN) == LOW)
   {
     directionState = RIGHT;
@@ -69,7 +69,7 @@ void writeDAC(uint16_t channel, uint16_t value) {
 void initializeSnake()
 {
   int j = 100;
-  for(int i = 0; i < snakeLength; i++)
+  for(int i = snakeLength; i >= 0; i--)
   { 
     snake[i][0] = 100;
     snake[i][1] = j;
@@ -94,11 +94,10 @@ void drawSnake()
 
 void nextSnake()
 {
-  // Shift all elements back by one
-  for (int i = 1; i < snakeLength; i++)
+  for (int i = snakeLength; i > 0; i--)
   {
-      snake[i - 1][0] = snake[i][0];
-      snake[i - 1][1] = snake[i][1];
+      snake[i][0] = snake[i - 1][0];
+      snake[i][1] = snake[i - 1][1];
   }
 
   if(directionState == UP)
@@ -163,7 +162,8 @@ void drawSquare() {
 
 
 void setup() {
-  Serial.begin(9600);
+
+  //Serial.begin(9600);
   // SPI settings
   SPI.begin();
   //SPI.setClockDivider(SPI_CLOCK_DIV2); // Set SPI speed
@@ -188,19 +188,12 @@ void setup() {
 }
 
 void loop() {
-  for(int i=0; i < snakeLength; i++)
-  {
-    Serial.println(snake[i][0]);
-    Serial.println(snake[i][1]);
-  }
-
-
 
   drawSquare();
   drawSnake();
   nextSnake();
+  //Serial.println(directionState);
 
-  delay(1000);
 
 }
 
