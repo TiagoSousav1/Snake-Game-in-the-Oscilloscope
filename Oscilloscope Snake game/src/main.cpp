@@ -94,38 +94,60 @@ void drawSnake()
 
 void nextSnake()
 {
-  for (int i = snakeLength; i > 0; i--)
+  // Shift all elements back by one
+  for (int i = 1; i < snakeLength; i++)
   {
-      snake[i][0] = snake[i - 1][0];
-      snake[i][1] = snake[i - 1][1];
+      snake[i - 1][0] = snake[i][0];
+      snake[i - 1][1] = snake[i][1];
   }
 
   if(directionState == UP)
   {
     snake[0][0] = snake[1][0];
     snake[0][1] = snake[1][1]+1;
+
+    if (snake[0][1] > BOARD_SIZE)
+    {
+      snake[0][1] = 0;
+    }
     return;
   }
+
   if(directionState == DOWN)
   {
     snake[0][0] = snake[1][0];
     snake[0][1] = snake[1][1]-1;
+
+    if (snake[0][1] < 0)
+    {
+      snake[0][1] = BOARD_SIZE;
+    }
     return;
   }
+
   if(directionState == RIGHT)
   {
     snake[0][0] = snake[1][0]+1;
     snake[0][1] = snake[1][1];
+
+    if (snake[0][0] > BOARD_SIZE)
+    {
+      snake[0][0] = 0;
+    }
     return;
   }
+
   if(directionState == LEFT)
   {
     snake[0][0] = snake[1][0]-1;
     snake[0][1] = snake[1][1];
+
+    if (snake[0][0] < 0)
+    {
+      snake[0][0] = BOARD_SIZE;
+    }
     return;
   }
-
-
 }
 
 // DRAWING BOARD
