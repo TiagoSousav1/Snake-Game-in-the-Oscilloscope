@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <SPI.h>
+#include <time.h>
+#include <stdlib.h>
 
 // MCP4822 DAC control bits
 #define MCP4822_CHANNEL_1 0x3000
@@ -22,6 +24,7 @@
 const int stepSize = 16;
 
 uint16_t snake[BOARD_SIZE][2];
+uint16_t fruit[2] = {150, 150};
 int snakeLength = 100;
 
 SPISettings spiSets (20000000, MSBFIRST, SPI_MODE0);
@@ -113,41 +116,50 @@ void nextSnake()
     return;
   }
 
-  if(directionState == DOWN)
+  else if(directionState == DOWN)
   {
     snake[0][0] = snake[1][0];
     snake[0][1] = snake[1][1]-1;
 
-    if (snake[0][1] < 0)
+    if (snake[0][1] == 0)
     {
       snake[0][1] = BOARD_SIZE;
     }
     return;
   }
 
-  if(directionState == RIGHT)
+  else if(directionState == RIGHT)
   {
     snake[0][0] = snake[1][0]+1;
     snake[0][1] = snake[1][1];
 
-    if (snake[0][0] > BOARD_SIZE)
+    if (snake[0][0] == BOARD_SIZE)
     {
       snake[0][0] = 0;
     }
     return;
   }
 
-  if(directionState == LEFT)
+  else if(directionState == LEFT)
   {
     snake[0][0] = snake[1][0]-1;
     snake[0][1] = snake[1][1];
 
-    if (snake[0][0] < 0)
+    if (snake[0][0] == 0)
     {
       snake[0][0] = BOARD_SIZE;
     }
-    return;
+
   }
+
+
+  if (snake[0][0] == fruit[0] && snake[0][1] == fruit[1])
+  {
+    snakeLength++;
+    fruit[0] = rand() % BOARD_SIZE;
+    fruit[1] = rand() % BOARD_SIZE;
+  }
+
 }
 
 // DRAWING BOARD
@@ -180,6 +192,8 @@ void drawSquare() {
 
 
 void setup() {
+  // To create random numbers
+  srand(time(NULL));   // Initialization
 
   //Serial.begin(9600);
   // SPI settings
@@ -215,6 +229,7 @@ void loop() {
   drawSquare();
   drawSnake();
   nextSnake();
+  drawPoint(fruit[0], fruit[1]);
   //Serial.println(directionState);
 
 
