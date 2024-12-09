@@ -20,12 +20,12 @@
 #define DOWN 3
 
 #define BOARD_SIZE 256
+#define EATING_RADIUS 10
 
-const int stepSize = 16;
 
 uint16_t snake[BOARD_SIZE][2];
 uint16_t fruit[2] = {150, 150};
-int snakeLength = 100;
+int snakeLength = 20;
 
 SPISettings spiSets (20000000, MSBFIRST, SPI_MODE0);
 
@@ -104,16 +104,26 @@ void nextSnake()
       snake[i][1] = snake[i - 1][1];
   }
 
+
   if(directionState == UP)
   {
     snake[0][0] = snake[1][0];
     snake[0][1] = snake[1][1]+1;
 
+    if(((snake[0][0] >= fruit[0] - EATING_RADIUS && snake[0][0] <= fruit[0] + EATING_RADIUS)) && (snake[0][1] >= fruit[1] - EATING_RADIUS && snake[0][1] <= fruit[1] + EATING_RADIUS))
+    {
+
+      snakeLength += 10;
+      fruit[0] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
+      fruit[1] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
+    }
+
+
     if (snake[0][1] == BOARD_SIZE)
     {
       snake[0][1] = 0;
     }
-    return;
+
   }
 
   else if(directionState == DOWN)
@@ -121,11 +131,19 @@ void nextSnake()
     snake[0][0] = snake[1][0];
     snake[0][1] = snake[1][1]-1;
 
+    if(((snake[0][0] >= fruit[0] - EATING_RADIUS && snake[0][0] <= fruit[0] + EATING_RADIUS)) && (snake[0][1] >= fruit[1] - EATING_RADIUS && snake[0][1] <= fruit[1] + EATING_RADIUS))
+    {
+      snakeLength += 10;
+      fruit[0] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
+      fruit[1] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
+    }
+
+
     if (snake[0][1] == 0)
     {
       snake[0][1] = BOARD_SIZE;
     }
-    return;
+
   }
 
   else if(directionState == RIGHT)
@@ -133,11 +151,18 @@ void nextSnake()
     snake[0][0] = snake[1][0]+1;
     snake[0][1] = snake[1][1];
 
+
+    if(((snake[0][0] >= fruit[0] - EATING_RADIUS && snake[0][0] <= fruit[0] + EATING_RADIUS)) && (snake[0][1] >= fruit[1] - EATING_RADIUS && snake[0][1] <= fruit[1] + EATING_RADIUS))
+    {
+      snakeLength += 10;
+      fruit[0] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
+      fruit[1] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
+    }
+
     if (snake[0][0] == BOARD_SIZE)
     {
       snake[0][0] = 0;
     }
-    return;
   }
 
   else if(directionState == LEFT)
@@ -145,19 +170,19 @@ void nextSnake()
     snake[0][0] = snake[1][0]-1;
     snake[0][1] = snake[1][1];
 
+    
+    if(((snake[0][0] >= fruit[0] - EATING_RADIUS && snake[0][0] <= fruit[0] + EATING_RADIUS)) && (snake[0][1] >= fruit[1] - EATING_RADIUS && snake[0][1] <= fruit[1] + EATING_RADIUS))
+    {
+      snakeLength += 10;
+      fruit[0] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
+      fruit[1] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
+    }
+
     if (snake[0][0] == 0)
     {
       snake[0][0] = BOARD_SIZE;
     }
 
-  }
-
-
-  if (snake[0][0] == fruit[0] && snake[0][1] == fruit[1])
-  {
-    snakeLength++;
-    fruit[0] = rand() % BOARD_SIZE;
-    fruit[1] = rand() % BOARD_SIZE;
   }
 
 }
@@ -193,9 +218,10 @@ void drawSquare() {
 
 void setup() {
   // To create random numbers
-  srand(time(NULL));   // Initialization
+  randomSeed(analogRead(A0));
+  //srand(time(NULL));   // Initialization
 
-  //Serial.begin(9600);
+  Serial.begin(9600);
   // SPI settings
   SPI.begin();
   //SPI.setClockDivider(SPI_CLOCK_DIV2); // Set SPI speed
