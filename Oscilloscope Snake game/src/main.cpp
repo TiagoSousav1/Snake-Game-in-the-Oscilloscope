@@ -13,6 +13,7 @@
 #define UP_BUTTON_PIN 5
 #define DOWN_BUTTON_PIN 4
 #define INTERRUPT_PIN 2
+#define TIME_PIN 8
 
 #define RIGHT 0
 #define LEFT 1
@@ -22,7 +23,6 @@
 #define BOARD_SIZE 256
 #define EATING_RADIUS 10
 
-
 uint16_t snake[BOARD_SIZE][2];
 uint16_t fruit[2] = {150, 150};
 int snakeLength = 20;
@@ -30,6 +30,7 @@ int snakeLength = 20;
 SPISettings spiSets (20000000, MSBFIRST, SPI_MODE0);
 
 int directionState = UP;
+
 
 void inputInterrupt()
 {
@@ -61,6 +62,7 @@ void inputInterrupt()
 
 // Function to send data to the MCP4822 DAC
 void writeDAC(uint16_t channel, uint16_t value) {
+  value = value << 3;
   SPI.beginTransaction(spiSets);
   digitalWrite(CS_PIN, LOW);
   SPI.transfer16(channel | (value & 0x0FFF));  // Send channel + value
@@ -71,10 +73,10 @@ void writeDAC(uint16_t channel, uint16_t value) {
 // DRAW SNAKE
 void initializeSnake()
 {
-  int j = 100;
+  int j = 200;
   for(int i = snakeLength; i >= 0; i--)
   { 
-    snake[i][0] = 100;
+    snake[i][0] = 150;
     snake[i][1] = j;
     j++;
   }  
@@ -184,7 +186,6 @@ void nextSnake()
     }
 
   }
-
 }
 
 // DRAWING BOARD
@@ -219,9 +220,7 @@ void drawSquare() {
 void setup() {
   // To create random numbers
   randomSeed(analogRead(A0));
-  //srand(time(NULL));   // Initialization
 
-  Serial.begin(9600);
   // SPI settings
   SPI.begin();
   //SPI.setClockDivider(SPI_CLOCK_DIV2); // Set SPI speed
@@ -229,12 +228,12 @@ void setup() {
   pinMode(CS_PIN, OUTPUT);
   digitalWrite(CS_PIN, HIGH);  // Ensure CS pin is high
 
-  pinMode(LED_BUILTIN, OUTPUT);
   pinMode(RIGHT_BUTTON_PIN, INPUT);
   pinMode(LEFT_BUTTON_PIN, INPUT);
   pinMode(UP_BUTTON_PIN, INPUT);
   pinMode(DOWN_BUTTON_PIN, INPUT);
 
+  pinMode(TIME_PIN, OUTPUT);
 
   // BUTTONS
   pinMode(INTERRUPT_PIN, INPUT_PULLUP);
@@ -247,17 +246,16 @@ void setup() {
 
 void loop() {
 
-
-  //drawPoint(0, BOARD_SIZE);
-  //delay(1000);
-  //drawPoint(0, 0);
-  //delay(1000);
+  digitalWrite(TIME_PIN, HIGH);
   drawSquare();
+  digitalWrite(TIME_PIN, LOW);
   drawSnake();
+  pinMode(TIME_PIN, HIGH);
   nextSnake();
-  drawPoint(fruit[0], fruit[1]);
-  //Serial.println(directionState);
+  pinMode(TIME_PIN, LOW);
 
+  drawPoint(fruit[0], fruit[1]);
+  pinMode(TIME_PIN, HIGH);
 
 }
 
