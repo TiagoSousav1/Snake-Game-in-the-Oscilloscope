@@ -21,8 +21,10 @@
 #define DOWN 3
 
 #define BOARD_SIZE 256
-#define EATING_RADIUS 10
+#define EATING_RADIUS 6
 #define SNAKE_STEP 2
+#define SNAKE_MAX_LENGTH 190
+#define SNAKE_GROW_SIZE 5
 
 #define CLOCK_FREQ 2000
 #define FRAMES_PER_SECOND 60
@@ -133,24 +135,22 @@ void inputInterrupt()
   if(digitalRead(RIGHT_BUTTON_PIN) == LOW && directionState != LEFT)
   {
     directionState = RIGHT;
-    digitalWrite(LED_BUILTIN, HIGH); 
   }
-  if(digitalRead(LEFT_BUTTON_PIN) == LOW && directionState != RIGHT)
+  else if(digitalRead(LEFT_BUTTON_PIN) == LOW && directionState != RIGHT)
   {
     directionState = LEFT;
-    digitalWrite(LED_BUILTIN, HIGH); 
+
   }
     
-  if(digitalRead(UP_BUTTON_PIN) == LOW && directionState != DOWN)
+  else if(digitalRead(UP_BUTTON_PIN) == LOW && directionState != DOWN)
   {
-    directionState = UP;
-    digitalWrite(LED_BUILTIN, HIGH); 
+    directionState = UP; 
   }
     
-  if(digitalRead(DOWN_BUTTON_PIN) == LOW && directionState != UP)
+  else if(digitalRead(DOWN_BUTTON_PIN) == LOW && directionState != UP)
   {
     directionState = DOWN;
-    digitalWrite(LED_BUILTIN, HIGH);
+
   }
     
 }
@@ -226,7 +226,7 @@ void initializeSnake()
   int j = 200;
   for(int i = snakeLength; i >= 0; i--)
   { 
-    snake[i][0] = 150;
+    snake[i][0] = 100;
     snake[i][1] = j;
     j++;
   }  
@@ -267,13 +267,13 @@ void nextSnake()
     if(((snake[0][0] >= fruit[0] - EATING_RADIUS && snake[0][0] <= fruit[0] + EATING_RADIUS)) && (snake[0][1] >= fruit[1] - EATING_RADIUS && snake[0][1] <= fruit[1] + EATING_RADIUS))
     {
 
-      snakeLength += 10;
+      snakeLength += SNAKE_GROW_SIZE;
       fruit[0] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
       fruit[1] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
     }
 
 
-    if (snake[0][1] == BOARD_SIZE)
+    if (snake[0][1] >= BOARD_SIZE)
     {
       snake[0][1] = 0;
     }
@@ -287,13 +287,13 @@ void nextSnake()
 
     if(((snake[0][0] >= fruit[0] - EATING_RADIUS && snake[0][0] <= fruit[0] + EATING_RADIUS)) && (snake[0][1] >= fruit[1] - EATING_RADIUS && snake[0][1] <= fruit[1] + EATING_RADIUS))
     {
-      snakeLength += 10;
+      snakeLength += SNAKE_GROW_SIZE;
       fruit[0] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
       fruit[1] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
     }
 
 
-    if (snake[0][1] == 0)
+    if (snake[0][1] <= 0)
     {
       snake[0][1] = BOARD_SIZE;
     }
@@ -308,12 +308,12 @@ void nextSnake()
 
     if(((snake[0][0] >= fruit[0] - EATING_RADIUS && snake[0][0] <= fruit[0] + EATING_RADIUS)) && (snake[0][1] >= fruit[1] - EATING_RADIUS && snake[0][1] <= fruit[1] + EATING_RADIUS))
     {
-      snakeLength += 10;
+      snakeLength += SNAKE_GROW_SIZE;
       fruit[0] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
       fruit[1] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
     }
 
-    if (snake[0][0] == BOARD_SIZE)
+    if (snake[0][0] >= BOARD_SIZE)
     {
       snake[0][0] = 0;
     }
@@ -327,19 +327,19 @@ void nextSnake()
     
     if(((snake[0][0] >= fruit[0] - EATING_RADIUS && snake[0][0] <= fruit[0] + EATING_RADIUS)) && (snake[0][1] >= fruit[1] - EATING_RADIUS && snake[0][1] <= fruit[1] + EATING_RADIUS))
     {
-      snakeLength += 10;
+      snakeLength += SNAKE_GROW_SIZE;
       fruit[0] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
       fruit[1] = random(EATING_RADIUS, BOARD_SIZE - EATING_RADIUS);
     }
 
-    if (snake[0][0] == 0)
+    if (snake[0][0] <= 0)
     {
       snake[0][0] = BOARD_SIZE;
     }
 
   }
 
-  if (selfCollision())
+  if (selfCollision() || snakeLength >= SNAKE_MAX_LENGTH)
   {
     while(true)
     {
