@@ -183,11 +183,12 @@ void drawPoint(uint16_t x, uint16_t y)
 
 void drawSnake()
 {
+  //digitalWrite(TIME_PIN, HIGH);
   for (int i = 0; i < snakeLength; i++)
   {
     drawPoint(snake[i][0], snake[i][1]);
   }
-
+  //digitalWrite(TIME_PIN, LOW);
 }
 
 // DRAWING BOARD
@@ -201,20 +202,23 @@ void drawVerticalLine(int x, int y_start, int y_end)
 
 void drawHorizontalLine(int y, int x_start, int x_end)
 {
-  for(int i = x_start; i < x_end; i+=3)
+  for(int j = 0;  j <= x_end; j+=3)
   {
-    drawPoint(y, i);
+    drawPoint(j,y);
   }
+
 }
 
 // Function to draw the boundary square
 // Function to draw the boundary square
 void drawSquare() 
 {
+  //digitalWrite(TIME_PIN, HIGH);
   drawVerticalLine(0, 0, BOARD_SIZE); // Left side
   drawHorizontalLine(BOARD_SIZE, 0, BOARD_SIZE); // Top side
   drawVerticalLine(BOARD_SIZE, 0, BOARD_SIZE);  // Right side
   drawHorizontalLine(0, 0, BOARD_SIZE); // Bot side
+  //digitalWrite(TIME_PIN, LOW);
 }
 
 
@@ -232,11 +236,14 @@ void initializeSnake()
 
 void drawFruit()
 {
+  //digitalWrite(TIME_PIN, HIGH);
   drawPoint(fruit[0], fruit[1]);
+  //digitalWrite(TIME_PIN, LOW);
 }
 
 void nextSnake()
 {
+  //digitalWrite(TIME_PIN, HIGH);
   // Shift all elements back by one
   for (int i = snakeLength; i > 0; i--)
   {
@@ -324,6 +331,7 @@ void nextSnake()
     }
 
   }
+  //digitalWrite(TIME_PIN, LOW);
 }
 
 
@@ -362,6 +370,7 @@ void setup() {
   Sched_AddT(drawFruit, 0,  50);
   Sched_AddT(drawSnake, 0,  50);
   Sched_AddT(drawSquare, 0,  50);
+
 }
 
 ISR(TIMER1_COMPA_vect){//timer1 interrupt
