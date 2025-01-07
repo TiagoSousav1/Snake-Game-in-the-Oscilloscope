@@ -132,24 +132,24 @@ void Sched_Dispatch(void){
 void inputInterrupt()
 {
   //Serial.println("I WAS INTERRUPTED");
-  if(digitalRead(RIGHT_BUTTON_PIN) == LOW)
+  if(digitalRead(RIGHT_BUTTON_PIN) == LOW && directionState != LEFT)
   {
     directionState = RIGHT;
     digitalWrite(LED_BUILTIN, HIGH); 
   }
-  if(digitalRead(LEFT_BUTTON_PIN) == LOW)
+  if(digitalRead(LEFT_BUTTON_PIN) == LOW && directionState != RIGHT)
   {
     directionState = LEFT;
     digitalWrite(LED_BUILTIN, HIGH); 
   }
     
-  if(digitalRead(UP_BUTTON_PIN) == LOW)
+  if(digitalRead(UP_BUTTON_PIN) == LOW && directionState != DOWN)
   {
     directionState = UP;
     digitalWrite(LED_BUILTIN, HIGH); 
   }
     
-  if(digitalRead(DOWN_BUTTON_PIN) == LOW)
+  if(digitalRead(DOWN_BUTTON_PIN) == LOW && directionState != UP)
   {
     directionState = DOWN;
     digitalWrite(LED_BUILTIN, HIGH);
@@ -238,8 +238,17 @@ void drawFruit()
 {
   //digitalWrite(TIME_PIN, HIGH);
   drawPoint(fruit[0], fruit[1]);
-  //digitalWrite(TIME_PIN, LOW);
 }
+
+int selfCollision() {
+  for (int i = 1; i < snakeLength; i++) { // Start at 1 to exclude the head
+    if (snake[0][0] == snake[i][0] && snake[0][1] == snake[i][1]) {
+      return 1; // Collision detected
+    }
+  }
+  return 0;
+}
+
 
 void nextSnake()
 {
@@ -330,6 +339,14 @@ void nextSnake()
       snake[0][0] = BOARD_SIZE;
     }
 
+  }
+
+  if (selfCollision())
+  {
+    while(true)
+    {
+      // Halt program execution - manually reset to play again
+    }
   }
   //digitalWrite(TIME_PIN, LOW);
 }
