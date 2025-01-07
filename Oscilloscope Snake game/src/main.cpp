@@ -3,12 +3,10 @@
 #include <time.h>
 #include <stdlib.h>
 
-
 #define CS_PIN 10
 #define LDAC 8
 #define MCP4822_CHANNEL_1  0x3000  // Select channel A (bit 14)
 #define MCP4822_CHANNEL_2  0xB000  // Select channel B (bit 14)
-
 
 #define RIGHT_BUTTON_PIN 7
 #define LEFT_BUTTON_PIN 6
